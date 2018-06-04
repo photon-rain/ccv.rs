@@ -43,14 +43,15 @@ impl Drop for Matrix {
 impl Matrix {
     pub fn read<P: AsRef<Path>>(path: P, params: OpenAs) -> Option<Matrix> {
         let path : &str = path.as_ref().to_str().unwrap(); // FIXME: Better error reporting.
-        let c_path = CString::new(path).unwrap().as_ptr(); // FIXME: Better error reporting.
+        let c_path = CString::new(path).unwrap(); // FIXME: Better error reporting.
         let mut matrix = null_mut();
         let params = match params {
             OpenAs::Any => ffi::FileType::AnyFile as c_int,
             OpenAs::ToGray => ffi::FileType::AnyFile as c_int | ffi::FileType::Gray as c_int,
             OpenAs::ToColor => ffi::FileType::AnyFile as c_int | ffi::FileType::Color as c_int,
         };
-        if unsafe { ffi::ccv_read_impl(c_path, &mut matrix, params, 0, 0, 0) } == 0 {
+
+        if unsafe { ffi::ccv_read_impl(c_path.as_ptr(), &mut matrix, params, 0, 0, 0) } == 0 {
             Some(Matrix(matrix))
         } else {
             None
@@ -58,11 +59,10 @@ impl Matrix {
     }
     pub fn write<P: AsRef<Path>>(&self, path: P, format: FileFormat) -> Option<u64> {
         let path : &str = path.as_ref().to_str().unwrap(); // FIXME: Better error reporting.
-        let c_path = CString::new(path).unwrap().as_ptr(); // FIXME: Better error reporting.
+        let c_path = CString::new(path).unwrap(); // FIXME: Better error reporting.
 
         let mut len = 0;
-
-        if unsafe { ffi::ccv_write(self.0, c_path, &mut len, format, null_mut()) } == 0 {
+        if unsafe { ffi::ccv_write(self.0, c_path.as_ptr(), &mut len, format, null_mut()) } == 0 {
             Some(len as u64)
         } else {
             None

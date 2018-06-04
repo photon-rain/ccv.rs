@@ -21,6 +21,7 @@ fn main() {
     let configure_cmd = lib_dir.join("configure");
     status.write_fmt(format_args!("configure: {:?}\n", configure_cmd)).unwrap();
     Command::new(configure_cmd)
+        .args(&["CFLAGS=-fPIC","LIBS=jpeg"])
         .current_dir(lib_dir.clone())
         .status()
         .expect("Error in lib/configure");
@@ -36,18 +37,11 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}", lib_dir.to_str().unwrap());
     println!("cargo:rustc-link-lib=static=ccv");
-    println!("cargo:rustc-link-lib=ccv");
+    //println!("cargo:rustc-link-lib=ccv");
 
-    // Now handle libpng
-    let lib = pkg_config::Config::new().statik(false).atleast_version("1.6").probe("libpng").expect("Could not find libpng");
+    println!("cargo:rustc-link-lib=jpeg");
+    println!("cargo:rustc-link-lib=m");
+    println!("cargo:rustc-link-lib=png16");
 
-    // Link path
-    for path in &lib.link_paths {
-        println!("cargo:rustc-link-search={}", path.to_str().expect("Could not convert path to str"));
-    }
-
-    for lib in &lib.libs {
-        println!("cargo:rustc-link-lib={}", lib);
-    }
 
 }

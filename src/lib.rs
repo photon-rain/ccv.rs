@@ -1,4 +1,6 @@
 extern crate libc;
+#[allow(unused_variables)]
+#[allow(dead_code)]
 
 mod ffi;
 mod matrix;

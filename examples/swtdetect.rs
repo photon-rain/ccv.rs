@@ -15,11 +15,16 @@ fn main() {
     let mut pix = Matrix::read(file_in, OpenAs::ToGray).expect("Could not read image");
 
     let start = Instant::now();
-    let words = pix.detect_words(Default::default());
+//    let words = pix.detect_words(Default::default());
+
+    let swt = pix.swt(Default::default());
+    swt.write(file_out,FileFormat::BMP);
+
     let duration = Instant::now() - start;
 
-    for word in &words {
-        println!("{} {} {} {}", word.x, word.y, word.width, word.height);
-    }
-    println!("total : {} in time {}ms\n", words.len(), duration.as_secs() * 1000 + (duration.subsec_nanos() as u64) / 1000000);
+    // for word in &words {
+    //     println!("{} {} {} {}", word.x, word.y, word.width, word.height);
+    // }
+
+ //   println!("total : {} in time {}ms\n", words.len(), duration.as_secs() * 1000 + (duration.subsec_nanos() as u64) / 1000000);
 }
